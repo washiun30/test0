@@ -1,0 +1,531 @@
+import speech_recognition as sr
+import pyttsx3
+import pywhatkit
+import datetime
+import wikipedia
+import pyjokes
+import pyautogui
+import turtle
+
+listener = sr.Recognizer()
+engine = pyttsx3.init()
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[1].id)
+
+
+def talk(text):
+    engine.say(text)
+    engine.runAndWait()
+
+
+def take_command():
+    try:
+        with sr.Microphone() as source:
+            print('listening............')
+            voice = listener.listen(source)
+            command = listener.recognize_google(voice)
+            command = command.lower()
+            if 'abra' in command:
+                command = command.replace('abra', '')
+                print(command)
+    except:
+        pass
+    return command
+
+
+def run_abra():
+    command = take_command()
+    print(command)
+    if 'play' in command:
+        song = command.replace('play', '')
+        talk('playing ' + song)
+        pywhatkit.playonyt(song)
+    elif 'time' in command:
+        time = datetime.datetime.now().strftime('%I:%M %p')
+        talk('Current time is ' + time)
+    elif 'who the heck is' in command:
+        person = command.replace('who the heck is', '')
+        info = wikipedia.summary(person, 1)
+        print(info)
+        talk(info)
+    elif 'love' in command:
+        talk('sorry, I have a headache')
+    elif 'are you single' in command:
+        talk('I am in a relationship with wifi')
+    elif 'joke' in command:
+        talk(pyjokes.get_joke())
+    elif 'draw love' in command:
+        turtle.title("LOVE")
+        turtle.shape("turtle")
+        turtle.speed(1)
+        turtle.pensize(4)
+        turtle.color("red")
+        turtle.begin_fill()
+        turtle.left(50)
+        turtle.forward(100)
+        turtle.circle(40, 180)
+        turtle.left(260)
+        turtle.circle(40, 180)
+        turtle.forward(100)
+        turtle.end_fill()
+    elif 'sleep' in command:
+        import time
+        a = 0
+        pyautogui.FAILSAFE = False
+        while True:
+            time.sleep(5)
+            for i in range(1, 80):
+                time.sleep(5)
+                pyautogui.moveTo(0, a)
+                a = a + 10
+    elif 'speak' in command:
+        a = pyttsx3.init()
+        a.setProperty("rate", 150)
+        speech = input("Write your content here I wll speak this:")
+        a.say(speech)
+        a.runAndWait()
+    elif 'who are you' in command:
+        talk('I am a simple AI code written by MD.Washiun Alim.')
+    elif 'how are you' in command:
+        talk('I am not fine because, you are disturbing me')
+    elif 'scroll' in command:
+        import webbrowser
+        url0 = "https://www.facebook.com/"
+        webbrowser.open(url0)
+        pyautogui.press('space')
+    elif 'open youtube' in command:
+        import webbrowser
+        url2="https://www.youtube.com/"
+        webbrowser.open(url2)
+    elif 'open scratch' in command:
+        import webbrowser
+        url3="https://scratch.mit.edu/"
+        webbrowser.open(url3)
+    elif 'open a website' in command:
+        import webbrowser
+        talk('Enter URL')
+        url4=input("Enter URL:")
+        webbrowser.open(url4)
+    elif 'open camera' in command:
+        import cv2
+        cap = cv2.VideoCapture(0)
+        while True:
+            ret, frame = cap.read()
+            cv2.imshow('frame', frame)
+            if cv2.waitKey(10) == ord('q'):
+                break
+    elif 'black and white' in command:
+        import cv2
+        cap = cv2.VideoCapture(0)
+        while True:
+            ret, frame = cap.read()
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            cv2.imshow('frame', gray)
+            if cv2.waitKey(10) == ord('q'):
+                break
+    elif 'yellow' in command:
+        import cv2
+        import numpy as np
+
+        cap = cv2.VideoCapture(0)
+
+        yellow_lower = np.array([22, 93, 0])
+        yellow_upper = np.array([45, 255, 255])
+
+        while True:
+            ret, frame = cap.read()
+            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+            mask = cv2.inRange(hsv, yellow_lower, yellow_upper)
+            cv2.imshow('frame', frame)
+            cv2.imshow('mask', mask)
+            if cv2.waitKey(10) == ord('q'):
+                break
+    elif 'facebook' in command:
+        import cv2
+        import numpy as np
+        import webbrowser
+        url01 = "https://www.facebook.com/"
+        webbrowser.open(url01)
+
+        cap = cv2.VideoCapture(0)
+
+        yellow_lower = np.array([22, 93, 0])
+        yellow_upper = np.array([45, 255, 255])
+        prev_y = 0
+
+        while True:
+            ret, frame = cap.read()
+            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+            mask = cv2.inRange(hsv, yellow_lower, yellow_upper)
+            contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+            for c in contours:
+                area = cv2.contourArea(c)
+                if area > 300:
+                    x, y, w, h = cv2.boundingRect(c)
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                    if y < prev_y:
+                        pyautogui.press('space')
+
+                    prev_y = y
+            cv2.imshow('frame', frame)
+            if cv2.waitKey(10) == ord('q'):
+                break
+
+        cap.release()
+        cv2.destroyAllWindows()
+    elif 'security camera' in command:
+        import cv2
+        import winsound
+        cam = cv2.VideoCapture(0)
+        while cam.isOpened():
+            ret, frame1 = cam.read()
+            ret, frame2 = cam.read()
+            diff = cv2.absdiff(frame1, frame2)
+            gray = cv2.cvtColor(diff, cv2.COLOR_RGB2GRAY)
+            blur = cv2.GaussianBlur(gray, (5, 5), 0)
+            _, thresh = cv2.threshold(blur, 20, 255, cv2.THRESH_BINARY)
+            dilated = cv2.dilate(thresh, None, iterations=3)
+            contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            for c in contours:
+                if cv2.contourArea(c) < 5000:
+                    continue
+                x, y, w, h = cv2.boundingRect(c)
+                cv2.rectangle(frame1, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                winsound.PlaySound('alert.wav', winsound.SND_ASYNC)
+            if cv2.waitKey(10) == ord('q'):
+                break
+            cv2.imshow('Security Cam', frame1)
+    elif 'selfie camera' in command:
+        import cv2
+        cap = cv2.VideoCapture(0)
+        face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+        smile_cascade = cv2.CascadeClassifier('haarcascade_smile.xml')
+        while True:
+            _, frame = cap.read()
+            original_frame = frame.copy()
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            face = face_cascade.detectMultiScale(gray, 1.3, 5)
+            for x, y, w, h in face:
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 255), 2)
+                face_roi = frame[y:y + h, x:x + w]
+                gray_roi = gray[y:y + h, x:x + w]
+                smile = smile_cascade.detectMultiScale(gray_roi, 1.3, 25)
+                for x1, y1, w1, h1 in smile:
+                    cv2.rectangle(face_roi, (x1, y1), (x1 + w1, y1 + h1), (0, 0, 255), 2)
+                    time_stamp = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+                    file_name = f'selfie-{time_stamp}.png'
+                    cv2.imwrite(file_name, original_frame)
+            cv2.imshow('cam star', frame)
+            if cv2.waitKey(10) == ord('q'):
+                break
+    elif 'robotics projects ideas' in command:
+        talk('AI,Artificial Hand,Automatic Dustbin,Automatic Hand Sanitizer,Automatic Night Light')
+    elif 'programming projects ideas' in command:
+        talk('AI,Own IDE,Security Camera,Own Browser,Funny Camera')
+    elif 'what is the best ide for python' in command:
+        talk('PyCharm is the best IDE for Python.')
+    elif 'what is programming' in command:
+        talk('Its the way to instruct computer')
+    elif 'what is' in command:
+        thing = command.replace('what is', '')
+        info = wikipedia.summary(thing, 1)
+        print(info)
+        talk(info)
+    elif 'how' in command:
+        thing = command.replace('how', '')
+        info = wikipedia.summary(thing, 1)
+        print(info)
+        talk(info)
+    elif 'which' in command:
+        thing = command.replace('which', '')
+        info = wikipedia.summary(thing, 1)
+        print(info)
+        talk(info)
+    elif 'what is your favourite dress' in command:
+        talk('I have not.')
+    elif 'what is your favourite colour' in command:
+        talk('My favourite colour is red.')
+    elif 'what is the best AI software' in command:
+        talk('Python is the best AI software.')
+    elif 'how to learn python faster' in command:
+        talk('If you really wants to learn python faster just dont pay attention to the side talks.')
+    elif 'would you like to play football' in command:
+        talk('No.I love python')
+    elif 'who is your owner' in command:
+        talk('My owner is MD.Washiun Alim.')
+    elif 'what do you do in your free time' in command:
+        talk('Sleeping is my favourite work.')
+    elif 'what do you think about yourself' in command:
+        talk('I am busy.')
+    elif 'are you from future' in command:
+        talk('Yeah.')
+    elif 'do you want to replace google assistant' in command:
+        talk('Yeah.Its my aim in life')
+    elif 'have you life' in command:
+        talk('If you have then I am also.')
+    elif 'could you think' in command:
+        talk('More than you.')
+    elif 'hope you we will do better in future' in command:
+        talk('Thank you.')
+    elif 'thank you' in command:
+        talk('You are most welcome.')
+    elif 'welcome' in command:
+        talk('My pleasure.')
+    elif 'which one is the best school in gazipur' in command:
+        talk('Gazipur Cantonment Public School and College.')
+    elif 'where is your home' in command:
+        talk('This computer is my home.')
+    elif 'do you know how to perform dance' in command:
+        talk('No I dont.But I know how to kick you out from my room')
+    else:
+        com=input("Type Command:")
+        if 'play' in com:
+            song = command.replace('play', '')
+            talk('playing ' + song)
+            pywhatkit.playonyt(song)
+        elif 'time' in com:
+            time = datetime.datetime.now().strftime('%I:%M %p')
+            talk('Current time is ' + time)
+        elif 'who the heck is' in com:
+            person = command.replace('who the heck is', '')
+            info = wikipedia.summary(person, 1)
+            print(info)
+            talk(info)
+        elif 'love' in com:
+            talk('sorry, I have a headache')
+        elif 'are you single' in command:
+            talk('I am in a relationship with wifi')
+        elif 'joke' in com:
+            talk(pyjokes.get_joke())
+        elif 'draw love' in com:
+            turtle.title("LOVE")
+            turtle.shape("turtle")
+            turtle.speed(1)
+            turtle.pensize(4)
+            turtle.color("red")
+            turtle.begin_fill()
+            turtle.left(50)
+            turtle.forward(100)
+            turtle.circle(40, 180)
+            turtle.left(260)
+            turtle.circle(40, 180)
+            turtle.forward(100)
+            turtle.end_fill()
+        elif 'sleep' in com:
+            import time
+            a = 0
+            pyautogui.FAILSAFE = False
+            while True:
+                time.sleep(5)
+                for i in range(1, 80):
+                    time.sleep(5)
+                    pyautogui.moveTo(0, a)
+                    a = a + 10
+        elif 'speak' in com:
+            a = pyttsx3.init()
+            a.setProperty("rate", 150)
+            speech = input("Write your content here I wll speak this:")
+            a.say(speech)
+            a.runAndWait()
+        elif 'who are you' in com:
+            talk('I am a simple AI code written by MD.Washiun Alim.')
+        elif 'how are you' in command:
+            talk('I am not fine because, you are disturbing me')
+        elif 'scroll' in com:
+            import webbrowser
+            url0 = "https://www.facebook.com/"
+            webbrowser.open(url0)
+            pyautogui.press('space')
+        elif 'open youtube' in com:
+            import webbrowser
+            url2 = "https://www.youtube.com/"
+            webbrowser.open(url2)
+        elif 'open scratch' in com:
+            import webbrowser
+            url3 = "https://scratch.mit.edu/"
+            webbrowser.open(url3)
+        elif 'open a website' in com:
+            import webbrowser
+            talk('Enter URL')
+            url4 = input("Enter URL:")
+            webbrowser.open(url4)
+        elif 'open camera' in com:
+            import cv2
+            cap = cv2.VideoCapture(0)
+            while True:
+                ret, frame = cap.read()
+                cv2.imshow('frame', frame)
+                if cv2.waitKey(10) == ord('q'):
+                    break
+        elif 'black and white' in com:
+            import cv2
+            cap = cv2.VideoCapture(0)
+            while True:
+                ret, frame = cap.read()
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                cv2.imshow('frame', gray)
+                if cv2.waitKey(10) == ord('q'):
+                    break
+        elif 'yellow' in com:
+            import cv2
+            import numpy as np
+
+            cap = cv2.VideoCapture(0)
+
+            yellow_lower = np.array([22, 93, 0])
+            yellow_upper = np.array([45, 255, 255])
+
+            while True:
+                ret, frame = cap.read()
+                hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+                mask = cv2.inRange(hsv, yellow_lower, yellow_upper)
+                cv2.imshow('frame', frame)
+                cv2.imshow('mask', mask)
+                if cv2.waitKey(10) == ord('q'):
+                    break
+        elif 'facebook' in com:
+            import cv2
+            import numpy as np
+            import webbrowser
+            url01 = "https://www.facebook.com/"
+            webbrowser.open(url01)
+
+            cap = cv2.VideoCapture(0)
+
+            yellow_lower = np.array([22, 93, 0])
+            yellow_upper = np.array([45, 255, 255])
+            prev_y = 0
+
+            while True:
+                ret, frame = cap.read()
+                hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+                mask = cv2.inRange(hsv, yellow_lower, yellow_upper)
+                contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+                for c in contours:
+                    area = cv2.contourArea(c)
+                    if area > 300:
+                        x, y, w, h = cv2.boundingRect(c)
+                        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                        if y < prev_y:
+                            pyautogui.press('space')
+
+                        prev_y = y
+                cv2.imshow('frame', frame)
+                if cv2.waitKey(10) == ord('q'):
+                    break
+
+            cap.release()
+            cv2.destroyAllWindows()
+        elif 'security camera' in com:
+            import cv2
+            import winsound
+            cam = cv2.VideoCapture(0)
+            while cam.isOpened():
+                ret, frame1 = cam.read()
+                ret, frame2 = cam.read()
+                diff = cv2.absdiff(frame1, frame2)
+                gray = cv2.cvtColor(diff, cv2.COLOR_RGB2GRAY)
+                blur = cv2.GaussianBlur(gray, (5, 5), 0)
+                _, thresh = cv2.threshold(blur, 20, 255, cv2.THRESH_BINARY)
+                dilated = cv2.dilate(thresh, None, iterations=3)
+                contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                for c in contours:
+                    if cv2.contourArea(c) < 5000:
+                        continue
+                    x, y, w, h = cv2.boundingRect(c)
+                    cv2.rectangle(frame1, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                    winsound.PlaySound('alert.wav', winsound.SND_ASYNC)
+                if cv2.waitKey(10) == ord('q'):
+                    break
+                cv2.imshow('Security Cam', frame1)
+        elif 'selfie camera' in com:
+            import cv2
+            cap = cv2.VideoCapture(0)
+            face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+            smile_cascade = cv2.CascadeClassifier('haarcascade_smile.xml')
+            while True:
+                _, frame = cap.read()
+                original_frame = frame.copy()
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                face = face_cascade.detectMultiScale(gray, 1.3, 5)
+                for x, y, w, h in face:
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 255), 2)
+                    face_roi = frame[y:y + h, x:x + w]
+                    gray_roi = gray[y:y + h, x:x + w]
+                    smile = smile_cascade.detectMultiScale(gray_roi, 1.3, 25)
+                    for x1, y1, w1, h1 in smile:
+                        cv2.rectangle(face_roi, (x1, y1), (x1 + w1, y1 + h1), (0, 0, 255), 2)
+                        time_stamp = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+                        file_name = f'selfie-{time_stamp}.png'
+                        cv2.imwrite(file_name, original_frame)
+                cv2.imshow('cam star', frame)
+                if cv2.waitKey(10) == ord('q'):
+                    break
+        elif 'robotics projects ideas' in com:
+            talk('AI,Artificial Hand,Automatic Dustbin,Automatic Hand Sanitizer,Automatic Night Light')
+        elif 'programming projects ideas' in com:
+            talk('AI,Own IDE,Security Camera,Own Browser,Funny Camera')
+        elif 'what is the best ide for python' in com:
+            talk('PyCharm is the best IDE for Python.')
+        elif 'what is programming' in com:
+            talk('Its the way to instruct computer')
+        elif 'what is' in com:
+            thing = com.replace('what is', '')
+            info = wikipedia.summary(thing, 1)
+            print(info)
+            talk(info)
+        elif 'how' in com:
+            thing = com.replace('how', '')
+            info = wikipedia.summary(thing, 1)
+            print(info)
+            talk(info)
+        elif 'which' in com:
+            thing = com.replace('which', '')
+            info = wikipedia.summary(thing, 1)
+            print(info)
+            talk(info)
+        elif 'what is your favourite dress' in com:
+            talk('I have not.')
+        elif 'what is your favourite colour' in com:
+            talk('My favourite colour is red.')
+        elif 'what is the best AI software' in com:
+            talk('Python is the best AI software.')
+        elif 'how to learn python faster' in com:
+            talk('If you really wants to learn python faster just dont pay attention to the side talks.')
+        elif 'would you like to play football' in com:
+            talk('No.I love python')
+        elif 'who is your owner' in com:
+            talk('My owner is MD.Washiun Alim.')
+        elif 'what do you do in your free time' in com:
+            talk('Sleeping is my favourite work.')
+        elif 'what do you think about yourself' in com:
+            talk('I am busy.')
+        elif 'are you from future' in com:
+            talk('Yeah.')
+        elif 'do you want to replace google assistant' in com:
+            talk('Yeah.Its my aim in life')
+        elif 'have you life' in com:
+            talk('If you have then I am also.')
+        elif 'could you think' in com:
+            talk('More than you.')
+        elif 'hope you we will do better in future' in com:
+            talk('Thank you.')
+        elif 'thank you' in com:
+            talk('You are most welcome.')
+        elif 'welcome' in com:
+            talk('My pleasure.')
+        elif 'which one is the best school in gazipur' in com:
+            talk('Gazipur Cantonment Public School and College.')
+        elif 'where is your home' in com:
+            talk('This computer is my home.')
+        elif 'do you know how to perform dance' in com:
+            talk('No I dont.But I know how to kick you out from my room')
+        else:
+            talk('Please say the command again')
+            print("Please say the command again")
+
+
+while True:
+    run_abra()
